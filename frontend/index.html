@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Serverless File Intelligence</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!--
+  frontend/index.html — Single-Page Application shell
+  =====================================================
+
+  WHAT TO BUILD — the HTML structure for the SFI frontend:
+
+  SECTION 1 — Auth screen (shown when not logged in)
+    - A centered card with:
+        Logo / app title "Serverless File Intelligence"
+        Tagline: "AI-powered document and image analysis"
+        "Sign In" button → redirect to Cognito Hosted UI URL
+          (URL format: https://<domain>.auth.<region>.amazoncognito.com/login
+                       ?client_id=<client_id>&response_type=code
+                       &scope=openid+email+profile
+                       &redirect_uri=<cloudfront_url>/callback)
+    - id="auth-screen"
+
+  SECTION 2 — Main app (hidden until logged in, id="app-screen")
+    a. Header
+       - App title + user email (from decoded JWT)
+       - "Sign Out" button
+
+    b. Upload area (id="upload-area")
+       - Drag-and-drop zone (id="drop-zone")
+           Text: "Drop a PDF or image here, or click to select"
+       - Hidden <input type="file" accept=".pdf,image/*">
+       - File size limit note: "Max 50 MB"
+       - Upload progress bar (id="upload-progress", hidden by default)
+
+    c. File list (id="file-list-container")
+       - Search / filter bar (optional)
+       - Scrollable list of file cards, each showing:
+           File name, content type icon, upload date
+           Status badge: PENDING (yellow) | PROCESSING (blue spinner) |
+                         PROCESSED (green) | FAILED (red)
+           "View Results" button (only shown when PROCESSED)
+           "Delete" button
+       - "Load More" button for pagination (hidden if no more results)
+
+    d. Results modal (id="results-modal", hidden by default)
+       - Close button
+       - File metadata (name, size, upload date)
+       - If document: "Extracted Text" collapsible section, "Summary" section,
+         "Entities" section (list of PERSON/ORG/LOCATION etc.)
+       - If image: "Labels" section (badges), "Summary" section
+       - "Download Original" button (pre-signed URL)
+
+    e. Toast notification area (id="toast-container")
+       - Stack of auto-dismissing toast messages (success, error, info)
+
+  SCRIPTS (at bottom of body):
+    <script src="app.js"></script>
+-->
+
+<!-- TODO: implement the HTML structure described above -->
+
+<script src="app.js"></script>
+</body>
+</html>

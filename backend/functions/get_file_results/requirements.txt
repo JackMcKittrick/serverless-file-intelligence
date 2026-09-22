@@ -1,0 +1,3 @@
+# TODO: add only what this specific function needs beyond the shared layer
+# aws-lambda-powertools is available via the shared layer
+# boto3 is provided by the Lambda runtime — do NOT include it here

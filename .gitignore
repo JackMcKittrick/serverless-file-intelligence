@@ -1,0 +1,47 @@
+# CDK
+cdk.out/
+.cdk.staging/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+dist/
+build/
+.eggs/
+
+# Environment
+.env
+.env.*
+*.pem
+
+# AWS
+.aws-sam/
+
+# Node (CDK CLI)
+node_modules/
+package-lock.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Terraform — sensitive values and generated files
+terraform/terraform.tfvars
+terraform/.terraform/
+terraform/.terraform.lock.hcl
+terraform/tfplan
+terraform/*.tfstate
+terraform/*.tfstate.backup
+
+# Test / coverage
+.pytest_cache/
+htmlcov/
+.coverage

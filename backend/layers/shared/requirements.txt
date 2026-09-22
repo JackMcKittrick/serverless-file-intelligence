@@ -1,0 +1,2 @@
+# These packages are bundled into the Lambda Layer and available to all functions
+aws-lambda-powertools[tracer,logger,metrics]>=2.30.0

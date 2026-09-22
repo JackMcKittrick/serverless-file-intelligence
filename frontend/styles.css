@@ -1,0 +1,67 @@
+/*
+  frontend/styles.css — SFI Application Styles
+  ==============================================
+
+  WHAT TO BUILD — CSS for the SFI single-page application.
+
+  Design direction:
+    - Dark background (#0f1117), white text, accent color electric blue (#3b82f6)
+    - Card-based layout — file list items are cards with subtle borders and shadows
+    - Responsive: works on mobile (single column) and desktop (wider layout)
+    - Subtle animations: upload progress bar, status badge pulse, toast slide-in
+    - No CSS frameworks — write it yourself to demonstrate CSS competency
+
+  SECTIONS TO STYLE:
+
+  1. Base / Reset
+     - box-sizing: border-box on *
+     - margin: 0, padding: 0
+     - body: background #0f1117, color #e5e7eb, font-family system-ui/sans-serif
+
+  2. Auth screen (#auth-screen)
+     - Full-viewport centered flex column
+     - Logo title: large, gradient text (blue to purple)
+     - Sign-in button: blue bg, white text, hover darkens, border-radius 8px
+
+  3. Header
+     - Sticky top bar, dark slightly lighter than body (#1a1d27)
+     - App name left, user email + sign-out right
+
+  4. Upload / drop zone (#drop-zone)
+     - Dashed border (#374151), rounded corners, centered text
+     - Hover state: border turns blue, background lightens slightly
+     - Drag-over state (class .dragover): border solid blue, background tinted
+
+  5. Upload progress bar (#upload-progress)
+     - Thin bar below drop zone, hidden by default (display: none)
+     - Inner fill: animated blue gradient moving left → right
+     - Show percentage text alongside
+
+  6. File list cards
+     - Grid or flex column of cards
+     - Card: background #1a1d27, border 1px #2d3748, border-radius 10px, padding 16px
+     - File name: bold white; metadata: smaller gray
+     - Status badge styles:
+         .status-pending:    yellow (#f59e0b) background, dark text
+         .status-processing: blue (#3b82f6) with a CSS pulse animation
+         .status-processed:  green (#10b981)
+         .status-failed:     red (#ef4444)
+
+  7. Results modal (#results-modal)
+     - Fixed overlay: background rgba(0,0,0,0.7)
+     - Centered modal card: max-width 700px, scrollable if tall
+     - Close button: top-right X
+     - Collapsible sections: <details>/<summary> or custom with JS toggle
+
+  8. Toast notifications (#toast-container)
+     - Fixed bottom-right stack
+     - Each toast: small card, slide-in from right animation
+     - Auto-dismiss after 4 seconds
+     - Color variants: .toast-success (green border), .toast-error (red), .toast-info (blue)
+
+  9. Utility classes
+     .hidden { display: none }
+     .spinner { CSS-only rotating animation for PROCESSING status }
+*/
+
+/* TODO: implement the styles described above */
