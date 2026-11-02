@@ -1,67 +1,702 @@
-/*
-  frontend/styles.css — SFI Application Styles
-  ==============================================
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-  WHAT TO BUILD — CSS for the SFI single-page application.
+:root {
+  color-scheme: dark;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #0f1117;
+  color: #e5e7eb;
+  line-height: 1.6;
+}
 
-  Design direction:
-    - Dark background (#0f1117), white text, accent color electric blue (#3b82f6)
-    - Card-based layout — file list items are cards with subtle borders and shadows
-    - Responsive: works on mobile (single column) and desktop (wider layout)
-    - Subtle animations: upload progress bar, status badge pulse, toast slide-in
-    - No CSS frameworks — write it yourself to demonstrate CSS competency
+body {
+  min-width: 280px;
+  min-height: 100vh;
+  background: #0f1117;
+}
 
-  SECTIONS TO STYLE:
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
 
-  1. Base / Reset
-     - box-sizing: border-box on *
-     - margin: 0, padding: 0
-     - body: background #0f1117, color #e5e7eb, font-family system-ui/sans-serif
+button,
+a,
+input {
+  -webkit-tap-highlight-color: transparent;
+}
 
-  2. Auth screen (#auth-screen)
-     - Full-viewport centered flex column
-     - Logo title: large, gradient text (blue to purple)
-     - Sign-in button: blue bg, white text, hover darkens, border-radius 8px
+button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 18px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: #3b82f6;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease;
+}
 
-  3. Header
-     - Sticky top bar, dark slightly lighter than body (#1a1d27)
-     - App name left, user email + sign-out right
+button:hover:not(:disabled) {
+  background: #2563eb;
+}
 
-  4. Upload / drop zone (#drop-zone)
-     - Dashed border (#374151), rounded corners, centered text
-     - Hover state: border turns blue, background lightens slightly
-     - Drag-over state (class .dragover): border solid blue, background tinted
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
 
-  5. Upload progress bar (#upload-progress)
-     - Thin bar below drop zone, hidden by default (display: none)
-     - Inner fill: animated blue gradient moving left → right
-     - Show percentage text alongside
+:focus-visible {
+  outline: 3px solid #93c5fd;
+  outline-offset: 4px;
+}
 
-  6. File list cards
-     - Grid or flex column of cards
-     - Card: background #1a1d27, border 1px #2d3748, border-radius 10px, padding 16px
-     - File name: bold white; metadata: smaller gray
-     - Status badge styles:
-         .status-pending:    yellow (#f59e0b) background, dark text
-         .status-processing: blue (#3b82f6) with a CSS pulse animation
-         .status-processed:  green (#10b981)
-         .status-failed:     red (#ef4444)
+a {
+  color: #93c5fd;
+  text-underline-offset: 3px;
+}
 
-  7. Results modal (#results-modal)
-     - Fixed overlay: background rgba(0,0,0,0.7)
-     - Centered modal card: max-width 700px, scrollable if tall
-     - Close button: top-right X
-     - Collapsible sections: <details>/<summary> or custom with JS toggle
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  background: #0f1117;
+  color: #e5e7eb;
+}
 
-  8. Toast notifications (#toast-container)
-     - Fixed bottom-right stack
-     - Each toast: small card, slide-in from right animation
-     - Auto-dismiss after 4 seconds
-     - Color variants: .toast-success (green border), .toast-error (red), .toast-info (blue)
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
 
-  9. Utility classes
-     .hidden { display: none }
-     .spinner { CSS-only rotating animation for PROCESSING status }
-*/
+#auth-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 24px;
+  text-align: center;
+}
 
-/* TODO: implement the styles described above */
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 32px;
+  border: 1px solid #2d3748;
+  border-radius: 16px;
+  background: #1a1d27;
+  box-shadow: 0 16px 48px rgb(0 0 0 / 25%);
+}
+
+#auth-screen h1,
+.logo-title {
+  margin-bottom: 12px;
+  background: linear-gradient(120deg, #60a5fa, #a78bfa);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  font-size: clamp(2rem, 6vw, 3rem);
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+#auth-screen p {
+  margin-bottom: 24px;
+  color: #9ca3af;
+}
+
+#auth-screen form {
+  display: grid;
+  gap: 16px;
+  text-align: left;
+}
+
+#auth-screen button {
+  width: 100%;
+}
+
+header,
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 24px;
+  border-bottom: 1px solid #2d3748;
+  background: #1a1d27;
+}
+
+header h1,
+.app-name {
+  color: #fff;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  min-width: 0;
+  margin-left: auto;
+}
+
+#user-email {
+  overflow: hidden;
+  max-width: 320px;
+  color: #9ca3af;
+  font-size: 0.875rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#logout-btn,
+#logout-button,
+.btn-secondary {
+  border-color: #374151;
+  background: transparent;
+  color: #e5e7eb;
+}
+
+#logout-btn:hover:not(:disabled),
+#logout-button:hover:not(:disabled),
+.btn-secondary:hover:not(:disabled) {
+  background: #252a38;
+}
+
+main,
+.main-content {
+  width: min(100%, 1100px);
+  margin-inline: auto;
+  padding: 32px 24px 64px;
+}
+
+section + section {
+  margin-top: 32px;
+}
+
+h2 {
+  margin-bottom: 16px;
+  color: #fff;
+  font-size: 1.375rem;
+}
+
+#drop-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 220px;
+  padding: 32px 24px;
+  border: 2px dashed #374151;
+  border-radius: 14px;
+  background: #151821;
+  text-align: center;
+  transition: border-color 180ms ease, background 180ms ease;
+}
+
+#drop-zone:hover {
+  border-color: #3b82f6;
+  background: #1a1f2c;
+}
+
+#drop-zone.dragover {
+  border-style: solid;
+  border-color: #3b82f6;
+  background: rgb(59 130 246 / 12%);
+}
+
+#drop-zone.uploading,
+#drop-zone.is-uploading {
+  border-color: #3b82f6;
+  animation: upload-pulse 1.8s ease-in-out infinite;
+}
+
+#drop-zone p {
+  overflow-wrap: anywhere;
+}
+
+.file-hint,
+.upload-hint,
+#drop-zone small {
+  color: #9ca3af;
+  font-size: 0.8125rem;
+}
+
+#upload-progress {
+  display: none;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+#upload-progress.active,
+#upload-progress.visible,
+#upload-progress.is-visible {
+  display: flex;
+}
+
+.progress-track,
+.progress-bar {
+  flex: 1;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #252a38;
+}
+
+.progress-fill,
+#progress-fill,
+#upload-progress-fill {
+  width: 0%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #2563eb, #60a5fa, #2563eb);
+  background-size: 200% 100%;
+  transition: width 200ms ease;
+  animation: progress-shimmer 1.5s linear infinite;
+}
+
+.progress-text,
+#progress-text,
+#upload-percentage {
+  min-width: 44px;
+  color: #9ca3af;
+  font-size: 0.8125rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#file-list,
+.file-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 16px;
+}
+
+.file-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid #2d3748;
+  border-radius: 10px;
+  background: #1a1d27;
+  box-shadow: 0 4px 14px rgb(0 0 0 / 12%);
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.file-card:hover {
+  border-color: #4b6282;
+  box-shadow: 0 6px 20px rgb(0 0 0 / 20%);
+}
+
+.file-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.file-name,
+.file-card h3 {
+  min-width: 0;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.file-meta,
+.file-date,
+.file-card time {
+  color: #9ca3af;
+  font-size: 0.8125rem;
+}
+
+.status-badge,
+.status-pending,
+.status-processing,
+.status-processed,
+.status-failed {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 6px;
+  width: fit-content;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.status-pending {
+  background: #f59e0b;
+  color: #17120a;
+}
+
+.status-processing {
+  background: #3b82f6;
+  color: #fff;
+  animation: status-pulse 2s ease-in-out infinite;
+}
+
+.status-processed {
+  background: #10b981;
+  color: #052e24;
+}
+
+.status-failed {
+  background: #ef4444;
+  color: #fff;
+}
+
+.file-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.delete-btn,
+.btn-danger {
+  border-color: #7f1d1d;
+  background: transparent;
+  color: #fca5a5;
+}
+
+.delete-btn:hover:not(:disabled),
+.btn-danger:hover:not(:disabled) {
+  background: #7f1d1d;
+  color: #fff;
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  padding: 40px 24px;
+  color: #9ca3af;
+  text-align: center;
+}
+
+#results-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 24px;
+  background: rgb(0 0 0 / 70%);
+  overscroll-behavior: contain;
+}
+
+.modal-content,
+.modal-card {
+  position: relative;
+  width: 100%;
+  max-width: 700px;
+  max-height: calc(100dvh - 48px);
+  overflow-y: auto;
+  padding: 32px;
+  border: 1px solid #2d3748;
+  border-radius: 14px;
+  background: #1a1d27;
+  box-shadow: 0 24px 80px rgb(0 0 0 / 45%);
+  overflow-wrap: anywhere;
+}
+
+.modal-content h2,
+.modal-card h2 {
+  padding-right: 44px;
+}
+
+.modal-close,
+.close-modal,
+#close-modal {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #9ca3af;
+  font-size: 1.5rem;
+}
+
+.modal-close:hover,
+.close-modal:hover,
+#close-modal:hover {
+  background: #252a38;
+  color: #fff;
+}
+
+#results-modal details {
+  margin-top: 16px;
+  border: 1px solid #2d3748;
+  border-radius: 8px;
+  background: #151821;
+}
+
+#results-modal summary {
+  padding: 14px 16px;
+  color: #e5e7eb;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#results-modal details[open] summary {
+  border-bottom: 1px solid #2d3748;
+}
+
+#results-modal details > :not(summary) {
+  margin: 16px;
+}
+
+#results-modal pre,
+.extracted-text {
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 16px;
+  border-radius: 8px;
+  background: #0f1117;
+  color: #d1d5db;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 0.8125rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+#results-modal ul,
+#results-modal ol {
+  padding-left: 24px;
+}
+
+.modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+#toast-container {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: min(380px, calc(100vw - 40px));
+  pointer-events: none;
+}
+
+.toast {
+  padding: 14px 18px;
+  border: 1px solid #374151;
+  border-left-width: 4px;
+  border-radius: 10px;
+  background: #1a1d27;
+  color: #e5e7eb;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 30%);
+  font-size: 0.875rem;
+  overflow-wrap: anywhere;
+  pointer-events: auto;
+  animation: toast-enter 240ms ease-out both,
+    toast-exit 240ms ease-in 3.76s forwards;
+}
+
+.toast-success {
+  border-left-color: #10b981;
+}
+
+.toast-error {
+  border-left-color: #ef4444;
+}
+
+.toast-info {
+  border-left-color: #3b82f6;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.spinner {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 700ms linear infinite;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes status-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgb(59 130 246 / 35%);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgb(59 130 246 / 0%);
+  }
+}
+
+@keyframes upload-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgb(59 130 246 / 20%);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgb(59 130 246 / 0%);
+  }
+}
+
+@keyframes progress-shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+@keyframes toast-enter {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes toast-exit {
+  to {
+    opacity: 0;
+    transform: translateY(8px);
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
+
+@media (max-width: 640px) {
+  header,
+  .app-header {
+    flex-wrap: wrap;
+    padding: 14px 16px;
+  }
+
+  .user-info {
+    flex: 1 1 100%;
+    justify-content: space-between;
+  }
+
+  #user-email {
+    max-width: calc(100vw - 160px);
+  }
+
+  main,
+  .main-content {
+    padding: 24px 16px 48px;
+  }
+
+  .auth-card {
+    padding: 24px;
+  }
+
+  #drop-zone {
+    min-height: 190px;
+    padding: 24px 16px;
+  }
+
+  #file-list,
+  .file-list {
+    grid-template-columns: 1fr;
+  }
+
+  #results-modal {
+    padding: 12px;
+  }
+
+  .modal-content,
+  .modal-card {
+    max-height: calc(100dvh - 24px);
+    padding: 24px 20px;
+  }
+
+  #toast-container {
+    right: 12px;
+    bottom: 12px;
+    width: calc(100vw - 24px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition: none !important;
+  }
+
+  .spinner,
+  .status-processing,
+  #drop-zone.uploading,
+  #drop-zone.is-uploading,
+  .progress-fill,
+  #progress-fill,
+  #upload-progress-fill {
+    animation: none;
+  }
+
+  .toast {
+    animation: toast-exit 1ms linear 4s forwards;
+  }
+}

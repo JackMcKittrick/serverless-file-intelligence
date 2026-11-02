@@ -3,67 +3,303 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light">
   <title>Serverless File Intelligence</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <!-- Authentication redirects to Cognito Hosted UI.
+       Email and password are entered securely on Cognito's sign-in page. -->
+  <main id="auth-screen" class="auth-screen">
+    <section class="auth-card" aria-labelledby="auth-title">
+      <div class="app-logo" aria-hidden="true">SFI</div>
+      <h1 id="auth-title">Serverless File Intelligence</h1>
+      <p class="tagline">AI-powered document and image analysis</p>
+      <p>Sign in to upload files and explore your AI-powered results.</p>
 
-<!--
-  frontend/index.html — Single-Page Application shell
-  =====================================================
+      <!-- app.js builds the Cognito Hosted UI URL and redirects on click. -->
+      <button id="sign-in-button" class="button button-primary" type="button">
+        Sign In
+      </button>
+    </section>
+  </main>
 
-  WHAT TO BUILD — the HTML structure for the SFI frontend:
+  <!-- app.js toggles the hidden property after authentication. -->
+  <div id="app-screen" class="app-screen" hidden>
+    <header class="app-header">
+      <a class="app-brand" href="./" aria-label="Serverless File Intelligence home">
+        <span class="app-logo" aria-hidden="true">SFI</span>
+        <span>Serverless File Intelligence</span>
+      </a>
 
-  SECTION 1 — Auth screen (shown when not logged in)
-    - A centered card with:
-        Logo / app title "Serverless File Intelligence"
-        Tagline: "AI-powered document and image analysis"
-        "Sign In" button → redirect to Cognito Hosted UI URL
-          (URL format: https://<domain>.auth.<region>.amazoncognito.com/login
-                       ?client_id=<client_id>&response_type=code
-                       &scope=openid+email+profile
-                       &redirect_uri=<cloudfront_url>/callback)
-    - id="auth-screen"
+      <div class="user-menu">
+        <span id="user-email" class="user-email"></span>
+        <button id="sign-out-button" class="button button-secondary" type="button">
+          Sign Out
+        </button>
+      </div>
+    </header>
 
-  SECTION 2 — Main app (hidden until logged in, id="app-screen")
-    a. Header
-       - App title + user email (from decoded JWT)
-       - "Sign Out" button
+    <main id="main-content" class="main-content">
+      <section id="upload-area" class="upload-area" aria-labelledby="upload-title">
+        <h1 id="upload-title">Analyze a file</h1>
+        <p>Upload a document or image to extract information and generate a summary.</p>
 
-    b. Upload area (id="upload-area")
-       - Drag-and-drop zone (id="drop-zone")
-           Text: "Drop a PDF or image here, or click to select"
-       - Hidden <input type="file" accept=".pdf,image/*">
-       - File size limit note: "Max 50 MB"
-       - Upload progress bar (id="upload-progress", hidden by default)
+        <button
+          id="drop-zone"
+          class="drop-zone"
+          type="button"
+          aria-controls="file-input"
+          aria-describedby="upload-hint"
+        >
+          <span class="upload-icon" aria-hidden="true">↑</span>
+          <span>Drop a PDF or image here, or click to select</span>
+          <span id="upload-hint" class="upload-hint">
+            PDF and image files · Max 50 MB
+          </span>
+        </button>
 
-    c. File list (id="file-list-container")
-       - Search / filter bar (optional)
-       - Scrollable list of file cards, each showing:
-           File name, content type icon, upload date
-           Status badge: PENDING (yellow) | PROCESSING (blue spinner) |
-                         PROCESSED (green) | FAILED (red)
-           "View Results" button (only shown when PROCESSED)
-           "Delete" button
-       - "Load More" button for pagination (hidden if no more results)
+        <input
+          id="file-input"
+          type="file"
+          accept=".pdf,image/*"
+          aria-label="Select a PDF or image to upload"
+          hidden
+        >
 
-    d. Results modal (id="results-modal", hidden by default)
-       - Close button
-       - File metadata (name, size, upload date)
-       - If document: "Extracted Text" collapsible section, "Summary" section,
-         "Entities" section (list of PERSON/ORG/LOCATION etc.)
-       - If image: "Labels" section (badges), "Summary" section
-       - "Download Original" button (pre-signed URL)
+        <div id="upload-progress" class="upload-progress" hidden>
+          <label for="upload-progress-bar">Uploading file</label>
+          <progress id="upload-progress-bar" max="100" value="0">0%</progress>
+          <span id="upload-progress-text" role="status" aria-live="polite">0%</span>
+        </div>
+      </section>
 
-    e. Toast notification area (id="toast-container")
-       - Stack of auto-dismissing toast messages (success, error, info)
+      <section
+        id="file-list-container"
+        class="file-list-container"
+        aria-labelledby="files-title"
+      >
+        <div class="section-header">
+          <h2 id="files-title">Your files</h2>
 
-  SCRIPTS (at bottom of body):
-    <script src="app.js"></script>
--->
+          <div class="file-filters" role="search" aria-label="Filter your files">
+            <label for="file-search">Search files</label>
+            <input
+              id="file-search"
+              type="search"
+              placeholder="Search by file name"
+            >
 
-<!-- TODO: implement the HTML structure described above -->
+            <label for="status-filter">Status</label>
+            <select id="status-filter">
+              <option value="">All statuses</option>
+              <option value="PENDING">Pending</option>
+              <option value="PROCESSING">Processing</option>
+              <option value="PROCESSED">Processed</option>
+              <option value="FAILED">Failed</option>
+            </select>
+          </div>
+        </div>
 
-<script src="app.js"></script>
+        <p id="file-list-loading" role="status" hidden>Loading your files…</p>
+
+        <div id="file-list-empty" class="empty-state">
+          <h3>No files yet</h3>
+          <p>Upload a PDF or image to get started.</p>
+        </div>
+
+        <p id="file-list-error" class="error-message" role="alert" hidden></p>
+
+        <div
+          id="file-list-scroll"
+          class="file-list-scroll"
+          role="region"
+          aria-label="Uploaded files"
+          tabindex="0"
+          style="max-height: 36rem; overflow-y: auto;"
+        >
+          <ul id="file-list" class="file-list" aria-label="Your uploaded files"></ul>
+        </div>
+
+        <button
+          id="load-more-button"
+          class="button button-secondary"
+          type="button"
+          hidden
+        >
+          Load More
+        </button>
+      </section>
+    </main>
+  </div>
+
+  <!-- Render file cards by cloning this template in app.js.
+       Populate user-provided strings using textContent. -->
+  <template id="file-card-template">
+    <li class="file-card">
+      <article class="file-card-content">
+        <span class="file-type-icon" aria-hidden="true"></span>
+
+        <div class="file-details">
+          <h3 class="file-name"></h3>
+          <p class="file-content-type"></p>
+          <p class="file-upload-date">
+            Uploaded <time class="uploaded-at"></time>
+          </p>
+        </div>
+
+        <!-- app.js adds exactly one status class:
+             status-pending, status-processing,
+             status-processed, or status-failed. -->
+        <span class="status-badge">
+          <span class="status-spinner" aria-hidden="true" hidden></span>
+          <span class="status-text"></span>
+        </span>
+
+        <div class="file-actions">
+          <!-- Show only when processingStatus is PROCESSED. -->
+          <button
+            class="view-results-button button button-primary"
+            type="button"
+            hidden
+          >
+            View Results
+          </button>
+          <button class="delete-file-button button button-danger" type="button">
+            Delete
+          </button>
+        </div>
+      </article>
+    </li>
+  </template>
+
+  <!-- Open using showModal() and close using close() in app.js. -->
+  <dialog
+    id="results-modal"
+    class="results-modal"
+    aria-labelledby="results-title"
+  >
+    <div class="modal-content">
+      <header class="modal-header">
+        <h2 id="results-title">Analysis results</h2>
+        <button
+          id="close-results-button"
+          class="modal-close"
+          type="button"
+          aria-label="Close results"
+        >
+          &times;
+        </button>
+      </header>
+
+      <section class="file-metadata" aria-labelledby="metadata-title">
+        <h3 id="metadata-title">File details</h3>
+        <dl>
+          <dt>Name</dt>
+          <dd id="results-file-name"></dd>
+
+          <dt>Type</dt>
+          <dd id="results-file-type"></dd>
+
+          <dt>Size</dt>
+          <dd id="results-file-size"></dd>
+
+          <dt>Uploaded</dt>
+          <dd><time id="results-uploaded-at"></time></dd>
+        </dl>
+      </section>
+
+      <p id="results-loading" role="status" hidden>Loading results…</p>
+      <p id="results-error" class="error-message" role="alert" hidden></p>
+
+      <section id="summary-section" aria-labelledby="summary-title">
+        <h3 id="summary-title">Summary</h3>
+        <p id="results-summary" style="white-space: pre-wrap;"></p>
+      </section>
+
+      <div id="document-results" hidden>
+        <details id="extracted-text-section">
+          <summary>Extracted Text</summary>
+          <pre
+            id="results-extracted-text"
+            class="extracted-text"
+            style="white-space: pre-wrap; overflow-wrap: anywhere;"
+          ></pre>
+        </details>
+
+        <section id="entities-section" aria-labelledby="entities-title">
+          <h3 id="entities-title">Entities</h3>
+          <p id="entities-empty" hidden>No entities were detected.</p>
+          <ul id="results-entities" class="entity-list"></ul>
+        </section>
+      </div>
+
+      <section
+        id="image-results"
+        aria-labelledby="labels-title"
+        hidden
+      >
+        <h3 id="labels-title">Labels</h3>
+        <p id="labels-empty" hidden>No labels were detected.</p>
+        <ul id="results-labels" class="label-list"></ul>
+      </section>
+
+      <footer class="modal-footer">
+        <!-- app.js sets href to the pre-signed download URL before showing. -->
+        <a
+          id="download-original-button"
+          class="button button-primary"
+          download
+          hidden
+        >
+          Download Original
+        </a>
+      </footer>
+    </div>
+  </dialog>
+
+  <template id="entity-template">
+    <li class="entity-item">
+      <span class="entity-text"></span>
+      <span class="entity-type badge"></span>
+    </li>
+  </template>
+
+  <template id="label-template">
+    <li class="label-badge badge">
+      <span class="label-name"></span>
+      <span class="label-confidence"></span>
+    </li>
+  </template>
+
+  <div
+    id="toast-container"
+    class="toast-container"
+    role="region"
+    aria-label="Notifications"
+    aria-live="polite"
+    aria-relevant="additions"
+  ></div>
+
+  <!-- app.js applies toast-success, toast-error, or toast-info,
+       fills the message, and removes each toast after a timeout. -->
+  <template id="toast-template">
+    <div class="toast" aria-atomic="true">
+      <span class="toast-message"></span>
+      <button
+        class="toast-dismiss"
+        type="button"
+        aria-label="Dismiss notification"
+      >
+        &times;
+      </button>
+    </div>
+  </template>
+
+  <noscript>
+    <p>JavaScript is required to sign in, upload files, and view analysis results.</p>
+  </noscript>
+
+  <script src="app.js"></script>
 </body>
 </html>
