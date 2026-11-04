@@ -134,7 +134,7 @@ def process_stream(records):
 
         # converts to json then bytes for sending
         payload = json.dumps(
-            {"fileId": file_id, "status": new_status}
+            {"fileId": file_id, "processingStatus": new_status}
         ).encode("utf-8")
 
         # loops thru all of users saved connections
