@@ -33,6 +33,10 @@ input {
   -webkit-tap-highlight-color: transparent;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 button {
   display: inline-flex;
   align-items: center;
@@ -106,8 +110,7 @@ label {
   box-shadow: 0 16px 48px rgb(0 0 0 / 25%);
 }
 
-#auth-screen h1,
-.logo-title {
+#auth-screen h1 {
   margin-bottom: 12px;
   background: linear-gradient(120deg, #60a5fa, #a78bfa);
   background-clip: text;
@@ -123,17 +126,10 @@ label {
   color: #9ca3af;
 }
 
-#auth-screen form {
-  display: grid;
-  gap: 16px;
-  text-align: left;
-}
-
 #auth-screen button {
   width: 100%;
 }
 
-header,
 .app-header {
   position: sticky;
   top: 0;
@@ -147,14 +143,34 @@ header,
   background: #1a1d27;
 }
 
-header h1,
-.app-name {
+.app-logo {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: linear-gradient(120deg, #2563eb, #7c3aed);
   color: #fff;
-  font-size: 1.25rem;
-  font-weight: 700;
+  font-size: 0.875rem;
+  font-weight: 800;
 }
 
-.user-info {
+.auth-card .app-logo {
+  margin-bottom: 16px;
+}
+
+.app-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  color: #fff;
+  font-size: 1.125rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.user-menu {
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -172,21 +188,16 @@ header h1,
   white-space: nowrap;
 }
 
-#logout-btn,
-#logout-button,
-.btn-secondary {
+.button-secondary {
   border-color: #374151;
   background: transparent;
   color: #e5e7eb;
 }
 
-#logout-btn:hover:not(:disabled),
-#logout-button:hover:not(:disabled),
-.btn-secondary:hover:not(:disabled) {
+.button-secondary:hover:not(:disabled) {
   background: #252a38;
 }
 
-main,
 .main-content {
   width: min(100%, 1100px);
   margin-inline: auto;
@@ -203,18 +214,36 @@ h2 {
   font-size: 1.375rem;
 }
 
-#drop-zone {
+.upload-area h1 {
+  color: #fff;
+  font-size: 1.75rem;
+  line-height: 1.25;
+}
+
+.upload-area > p {
+  margin-bottom: 16px;
+  color: #9ca3af;
+}
+
+.section-header {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 12px;
-  min-height: 220px;
-  padding: 32px 24px;
+  justify-content: space-between;
+}
+
+.file-list-scroll {
+  max-height: 36rem;
+  overflow-y: auto;
+}
+
+#load-more-btn {
+  margin-top: 16px;
+}
+
+#drop-zone {
   border: 2px dashed #374151;
   border-radius: 14px;
   background: #151821;
-  text-align: center;
   transition: border-color 180ms ease, background 180ms ease;
 }
 
@@ -223,74 +252,89 @@ h2 {
   background: #1a1f2c;
 }
 
-#drop-zone.dragover {
+#drop-zone.drag-over {
   border-style: solid;
   border-color: #3b82f6;
   background: rgb(59 130 246 / 12%);
 }
 
-#drop-zone.uploading,
-#drop-zone.is-uploading {
-  border-color: #3b82f6;
-  animation: upload-pulse 1.8s ease-in-out infinite;
-}
-
-#drop-zone p {
+#upload-btn {
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  min-height: 220px;
+  padding: 32px 24px;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  color: inherit;
+  font-weight: 500;
+  text-align: center;
   overflow-wrap: anywhere;
 }
 
-.file-hint,
-.upload-hint,
-#drop-zone small {
+#upload-btn:hover:not(:disabled) {
+  background: transparent;
+}
+
+/* A disabled button can swallow drag events, so let them reach #drop-zone. */
+#upload-btn:disabled {
+  pointer-events: none;
+}
+
+.upload-icon {
+  color: #60a5fa;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.upload-hint {
   color: #9ca3af;
   font-size: 0.8125rem;
+}
+
+.upload-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 #upload-progress {
-  display: none;
-  align-items: center;
-  gap: 12px;
-  margin-top: 16px;
-}
-
-#upload-progress.active,
-#upload-progress.visible,
-#upload-progress.is-visible {
-  display: flex;
-}
-
-.progress-track,
-.progress-bar {
   flex: 1;
+  min-width: 0;
   height: 8px;
+  margin-top: 16px;
   overflow: hidden;
+  border: 0;
   border-radius: 999px;
+  background: #252a38;
+  accent-color: #3b82f6;
+}
+
+#upload-progress::-webkit-progress-bar {
   background: #252a38;
 }
 
-.progress-fill,
-#progress-fill,
-#upload-progress-fill {
-  width: 0%;
-  height: 100%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, #2563eb, #60a5fa, #2563eb);
-  background-size: 200% 100%;
+#upload-progress::-webkit-progress-value {
+  background: #3b82f6;
   transition: width 200ms ease;
-  animation: progress-shimmer 1.5s linear infinite;
 }
 
-.progress-text,
-#progress-text,
-#upload-percentage {
-  min-width: 44px;
+#upload-progress::-moz-progress-bar {
+  background: #3b82f6;
+}
+
+#upload-progress-text {
+  margin-top: 16px;
   color: #9ca3af;
   font-size: 0.8125rem;
-  text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#file-list,
+#upload-progress-text:empty {
+  display: none;
+}
+
 .file-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
@@ -315,15 +359,12 @@ h2 {
   box-shadow: 0 6px 20px rgb(0 0 0 / 20%);
 }
 
-.file-card-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
+.file-icon {
+  font-size: 1.75rem;
+  line-height: 1;
 }
 
-.file-name,
-.file-card h3 {
+.file-name {
   min-width: 0;
   color: #fff;
   font-size: 1rem;
@@ -331,18 +372,12 @@ h2 {
   overflow-wrap: anywhere;
 }
 
-.file-meta,
-.file-date,
-.file-card time {
+.file-date {
   color: #9ca3af;
   font-size: 0.8125rem;
 }
 
-.status-badge,
-.status-pending,
-.status-processing,
-.status-processed,
-.status-failed {
+.status-badge {
   display: inline-flex;
   align-items: center;
   align-self: flex-start;
@@ -384,15 +419,13 @@ h2 {
   margin-top: auto;
 }
 
-.delete-btn,
-.btn-danger {
+.delete-btn {
   border-color: #7f1d1d;
   background: transparent;
   color: #fca5a5;
 }
 
-.delete-btn:hover:not(:disabled),
-.btn-danger:hover:not(:disabled) {
+.delete-btn:hover:not(:disabled) {
   background: #7f1d1d;
   color: #fff;
 }
@@ -408,17 +441,27 @@ h2 {
   position: fixed;
   inset: 0;
   z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
   overflow-y: auto;
   padding: 24px;
+  border: 0;
   background: rgb(0 0 0 / 70%);
+  color: #e5e7eb;
   overscroll-behavior: contain;
 }
 
-.modal-content,
-.modal-card {
+/* display is set only while open. Setting it on the closed dialog
+   would show the overlay on page load. */
+#results-modal[open] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
   position: relative;
   width: 100%;
   max-width: 700px;
@@ -432,31 +475,50 @@ h2 {
   overflow-wrap: anywhere;
 }
 
-.modal-content h2,
-.modal-card h2 {
-  padding-right: 44px;
+.modal-content h2 {
+  padding-right: 88px;
 }
 
-.modal-close,
-.close-modal,
-#close-modal {
+.modal-content h3 {
+  margin: 24px 0 8px;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.modal-close {
   position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 44px;
-  height: 44px;
-  padding: 0;
-  border: 0;
+  top: 16px;
+  right: 16px;
+  min-height: 36px;
+  padding: 0 12px;
+  border-color: #374151;
   background: transparent;
-  color: #9ca3af;
-  font-size: 1.5rem;
+  color: #e5e7eb;
+  font-size: 0.875rem;
 }
 
-.modal-close:hover,
-.close-modal:hover,
-#close-modal:hover {
+.modal-close:hover:not(:disabled) {
   background: #252a38;
   color: #fff;
+}
+
+.file-metadata {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 4px 16px;
+  font-size: 0.875rem;
+}
+
+.file-metadata dt {
+  color: #9ca3af;
+}
+
+.results-summary {
+  white-space: pre-wrap;
+}
+
+.download-original-btn {
+  margin-top: 24px;
 }
 
 #results-modal details {
@@ -481,8 +543,7 @@ h2 {
   margin: 16px;
 }
 
-#results-modal pre,
-.extracted-text {
+#results-modal pre {
   max-width: 100%;
   overflow-x: auto;
   padding: 16px;
@@ -498,14 +559,6 @@ h2 {
 #results-modal ul,
 #results-modal ol {
   padding-left: 24px;
-}
-
-.modal-actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-top: 24px;
 }
 
 #toast-container {
@@ -547,34 +600,8 @@ h2 {
   border-left-color: #3b82f6;
 }
 
-.hidden {
-  display: none !important;
-}
-
-.spinner {
-  display: inline-block;
-  flex-shrink: 0;
-  width: 16px;
-  height: 16px;
-  border: 2px solid currentColor;
-  border-right-color: transparent;
-  border-radius: 50%;
-  animation: spin 700ms linear infinite;
-}
-
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+.toast-warning {
+  border-left-color: #f59e0b;
 }
 
 @keyframes status-pulse {
@@ -584,25 +611,6 @@ h2 {
   }
   50% {
     box-shadow: 0 0 0 5px rgb(59 130 246 / 0%);
-  }
-}
-
-@keyframes upload-pulse {
-  0%,
-  100% {
-    box-shadow: 0 0 0 0 rgb(59 130 246 / 20%);
-  }
-  50% {
-    box-shadow: 0 0 0 6px rgb(59 130 246 / 0%);
-  }
-}
-
-@keyframes progress-shimmer {
-  from {
-    background-position: 100% 0;
-  }
-  to {
-    background-position: -100% 0;
   }
 }
 
@@ -627,13 +635,12 @@ h2 {
 }
 
 @media (max-width: 640px) {
-  header,
   .app-header {
     flex-wrap: wrap;
     padding: 14px 16px;
   }
 
-  .user-info {
+  .user-menu {
     flex: 1 1 100%;
     justify-content: space-between;
   }
@@ -642,7 +649,6 @@ h2 {
     max-width: calc(100vw - 160px);
   }
 
-  main,
   .main-content {
     padding: 24px 16px 48px;
   }
@@ -651,12 +657,11 @@ h2 {
     padding: 24px;
   }
 
-  #drop-zone {
+  #upload-btn {
     min-height: 190px;
     padding: 24px 16px;
   }
 
-  #file-list,
   .file-list {
     grid-template-columns: 1fr;
   }
@@ -665,8 +670,7 @@ h2 {
     padding: 12px;
   }
 
-  .modal-content,
-  .modal-card {
+  .modal-content {
     max-height: calc(100dvh - 24px);
     padding: 24px 20px;
   }
@@ -686,13 +690,7 @@ h2 {
     transition: none !important;
   }
 
-  .spinner,
-  .status-processing,
-  #drop-zone.uploading,
-  #drop-zone.is-uploading,
-  .progress-fill,
-  #progress-fill,
-  #upload-progress-fill {
+  .status-processing {
     animation: none;
   }
 
