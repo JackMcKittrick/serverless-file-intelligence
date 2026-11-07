@@ -119,21 +119,24 @@ class MonitoringStack(Stack):
                 # every CDK construct has a code containing metadata
                 # so construct.node.addr is a unique ID that CDK assigns to the contruct
                 seen_functions.add(construct.node.addr)
-                # adds following calcuated metric to teh list 
+                # gets length of error rates this is used to create unique metric IDs
+                i = len(lambda_error_rates)
+                # adds following calcuated metric to the list 
                 lambda_error_rates.append(
                     # creates a CW metric math expression
                     cloudwatch.MathExpression(
                         # error percentage
-                        expression="IF(invocations > 0, 100 * errors / invocations, 0)",
+                        expression=f"IF(inv{i} > 0, 100 * err{i} / inv{i}, 0)",
                         using_metrics={ # errors is functions totla errors during each 5 min period
-                            "errors": construct.metric_errors(
-                                period=period,
-                                statistic="Sum",
-                            ),  # invocations is times lambda ran in the period
-                            "invocations": construct.metric_invocations(
-                                period=period,
-                                statistic="Sum",
-                            ),
+                            # a metric ID is like a variable name in code 
+                            # errors = LambdaA errors for example
+                            # if I have two different lambdas then ill also have
+                            # errors = LambdaB errors so theres two things called errors its not unique
+                            # the for loop is whats creating the duplicates
+                            # not a problem in python bc local vairable changes lambda functions its later when CDK builds one cloudwatch graph
+                            f"err{i}": construct.metric_errors(period=period, statistic="Sum"),
+                            # invocations is times lambda ran in the period
+                            f"inv{i}": construct.metric_invocations(period=period, statistic="Sum"),
                         },
                         period=period,
                         label=f"{construct.node.id} errors (%)",

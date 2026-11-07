@@ -42,7 +42,7 @@ class ApiStack(Stack):
         if role_arn.startswith("dummy-value-for-"):
             role_arn = (
                 f"arn:{self.partition}:iam::{self.account}:"
-                f"role/sfi-lambda-execution-{environment}"
+                f"role/sfi-{environment}-lambda-execution-role"
             )
 
         # imports a referenc eot the existing role i created in terraform

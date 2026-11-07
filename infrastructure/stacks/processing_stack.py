@@ -192,13 +192,14 @@ class ProcessingStack(Stack):
             retention=logs.RetentionDays.ONE_MONTH,  # retains logs for 30 days
         )
 
-        # creates the workflow resource and stores it on the stack
+        # creates the step function resource and stores it on the stack
         self._state_machine = sfn.StateMachine(
             self,
             "ProcessingStateMachine",
             state_machine_name=f"sfi-pipeline-{environment}",
             state_machine_type=sfn.StateMachineType.EXPRESS,
             # express workflow is a type of step function optimized for high volume short running workflows
+            # this right here is how the tasks above assigned to this step function
             definition_body=sfn.DefinitionBody.from_chainable(
                 determine_file_type
             ),  # builds workflow from starting choice state to all connected
@@ -215,7 +216,7 @@ class ProcessingStack(Stack):
 
         # create a dead letter queue like a failed messages parking lot
         # instead of losing the message forever aws saves it here so later can be inspected
-        dlq = sqs.Queue(
+        self.dlq = sqs.Queue(
             self,
             "ProcessingDeadLetterQueue",
             queue_name=f"sfi-processing-dlq-{environment}",
@@ -234,7 +235,7 @@ class ProcessingStack(Stack):
             # becomes avaliable again if failed or not deleted
             dead_letter_queue=sqs.DeadLetterQueue(
                 max_receive_count=3, # 3 tries before move to dlq
-                queue=dlq,
+                queue=self.dlq,
             ),  # configs where repeatedly failing messages go
             encryption=sqs.QueueEncryption.SQS_MANAGED,
             enforce_ssl=True,

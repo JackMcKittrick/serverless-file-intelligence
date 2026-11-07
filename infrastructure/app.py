@@ -63,6 +63,7 @@ api_stack = ApiStack(
     uploads_bucket=storage_stack.uploads_bucket,
     files_table=storage_stack.files_table,
     uploads_kms_key=storage_stack.uploads_kms_key,
+    processed_bucket=storage_stack.processed_bucket,
     env=env,
 )
 api_stack.add_dependency(auth_stack)

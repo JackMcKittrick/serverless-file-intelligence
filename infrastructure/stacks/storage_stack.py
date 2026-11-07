@@ -29,21 +29,27 @@ class StorageStack(Stack):
         # builds common SSM parameter path gonna be used to access terraform resources
         parameter_prefix = f"/sfi/{environment}"
 
-        # all 5 of the variables use value_from_lookup() to get parameter value from parameter store
-        # they end up as string paths with arn 
-        uploads_bucket_name = ssm.StringParameter.value_from_lookup(
+        # all 5 of the variables used value_from_lookup() 
+        # with that function call CDK tries to get the value during synth so its good when you need actual value at synth time
+        # synth obviously short for synthesize is process of aws translating programming code here python into cloudformation templates
+        # value_for_string_parameter returns a cloudformation token meaning actual value isnt needed during synth and value is resolved during deployement
+        # going to switch to value_for_string_parameter because with value_from_lookup() the CDK uses a dumby value which is a temporary placeholder
+        # but my code tries to use the placeholder as if it were a real bucket 
+        # this is because the lookup is done after synthesis finishes 
+        # they end up as string paths with name or arn 
+        uploads_bucket_name = ssm.StringParameter.value_for_string_parameter(
             self, f"{parameter_prefix}/uploads-bucket-name"
         )
-        processed_bucket_name = ssm.StringParameter.value_from_lookup(
+        processed_bucket_name = ssm.StringParameter.value_for_string_parameter(
             self, f"{parameter_prefix}/processed-bucket-name"
         )
-        uploads_kms_key_arn = ssm.StringParameter.value_from_lookup(
+        uploads_kms_key_arn = ssm.StringParameter.value_for_string_parameter(
             self, f"{parameter_prefix}/uploads-kms-key-arn"
         )
-        table_kms_key_arn = ssm.StringParameter.value_from_lookup(
+        table_kms_key_arn = ssm.StringParameter.value_for_string_parameter(
             self, f"{parameter_prefix}/table-kms-key-arn"
         )
-        waf_web_acl_arn = ssm.StringParameter.value_from_lookup(
+        waf_web_acl_arn = ssm.StringParameter.value_for_string_parameter(
             self, f"{parameter_prefix}/waf-web-acl-arn"
         )
 
